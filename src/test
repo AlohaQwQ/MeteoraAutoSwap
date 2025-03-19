@@ -1,0 +1,110 @@
+// src/config.ts
+import { Token } from './types'
+import dotenv from 'dotenv'
+import { Keypair } from '@solana/web3.js'
+import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes'
+
+// 加载钱包私钥
+const walletPrivateKeys = process.env.WALLET_PRIVATE_KEYS?.split(',') || []
+
+// 将私钥列表转换为 Keypair 对象
+export const wallets = walletPrivateKeys.map(privateKey => {
+  const wallet = new Uint8Array(bs58.decode(privateKey.trim()))
+  return Keypair.fromSecretKey(wallet)
+})
+
+// 定义常用代币列表
+export const TOKENS: Token[] = [
+  {
+    symbol: 'USDC',
+    address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    decimals: 6,
+  },
+  // {
+  //   symbol: 'USDT',
+  //   address: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+  //   decimals: 6,
+  // },
+  // {
+  //   symbol: 'USDC.e',
+  //   address: 'A9mUU4qviSctJVPJdBJWkb28deg915LYJKrzQ19ji3FM',
+  //   decimals: 6,
+  // },
+  // {
+  //   symbol: 'TUSD',
+  //   address: '9yQxnLGmaTQqsJKcQ2XkimzKW2JZ7VaM4VDS9j4xpvhu',
+  //   decimals: 6,
+  // },
+  // {
+  //   symbol: 'UXD',
+  //   address: '7kbnvuGBxxj8AG9qp8Scn56muWGaRaFqxg1FsRp3PaFT',
+  //   decimals: 6,
+  // },
+  // {
+  //   symbol: 'BONK',
+  //   address: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
+  //   decimals: 5,
+  // },
+  // {
+  //   symbol: 'WIF',
+  //   address: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
+  //   decimals: 9,
+  // },
+  {
+    symbol: 'SOL',
+    address: 'So11111111111111111111111111111111111111112',
+    decimals: 9,
+  },
+]
+
+// 可用的BinStep值
+// export const BIN_STEPS = [20]
+// export const BIN_STEPS = [1, 5, 10, 20, 25, 50, 100]
+export const BIN_STEPS = [parseInt(process.env.BIN_STEPS || '20', 10)]
+// Meteora程序ID
+export const METEORA_PROGRAM_ID = 'LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo'
+
+// 池子地址
+export const POOL_ADDRESS = process.env.POOL_ADDRESS || ''
+// 定义常用代币列表
+export const POOL_TOKENS: Token[] = [
+  {
+    symbol: process.env.TOKEN_X_SYMBOL || 'SOL',
+    address: process.env.TOKEN_X_ADDRESS || 'So11111111111111111111111111111111111111112',
+    decimals: parseInt(process.env.TOKEN_X_DECIMALS || '9', 10),
+  },
+  {
+    symbol: process.env.TOKEN_Y_SYMBOL || 'USDC',
+    address: process.env.TOKEN_Y_ADDRESS || 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    decimals: parseInt(process.env.TOKEN_Y_DECIMALS || '6', 10),
+  },
+]
+
+
+// 其他配置参数
+export const CONFIG = {
+  // 等待时间配置（毫秒）
+  WAIT_BETWEEN_SWAPS: [ // 交易之间等待3-8秒
+    parseInt(process.env.WAIT_BETWEEN_SWAPS_MIN || '3000', 10),
+    parseInt(process.env.WAIT_BETWEEN_SWAPS_MAX || '8000', 10),
+  ],
+  WAIT_BETWEEN_CYCLES: [ // 循环之间等待10-60秒
+    parseInt(process.env.WAIT_BETWEEN_CYCLES_MIN || '10000', 10),
+    parseInt(process.env.WAIT_BETWEEN_CYCLES_MAX || '60000', 10),
+  ],
+  // 错误后等待10秒
+  WAIT_AFTER_ERROR: parseInt(process.env.WAIT_AFTER_ERROR || '10000', 10),
+
+  // 交易配置,每轮2-5笔交易
+  SWAPS_PER_CYCLE: [
+    parseInt(process.env.SWAPS_PER_CYCLE_MIN || '1', 10),
+    parseInt(process.env.SWAPS_PER_CYCLE_MAX || '2', 10),
+  ],
+  
+  // 池子相关
+  MAX_RETRIES_CREATE_POOL: 5,
+  BASE_FACTOR: 10000,
+
+  // 其他
+  LOG_FILE: 'meteora-farming.log',
+}
